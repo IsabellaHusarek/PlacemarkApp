@@ -12,6 +12,9 @@ class MainApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
-        i("Placemark started") //logging
+        i("Placemark started")
+        placemarks.add(PlacemarkModel("One", "About one..."))
+        placemarks.add(PlacemarkModel("Two", "About two..."))
+        placemarks.add(PlacemarkModel("Three", "About three..."))
     }
 }

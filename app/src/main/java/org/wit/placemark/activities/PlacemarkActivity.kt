@@ -1,4 +1,4 @@
-package org.wit.placemark.activites
+package org.wit.placemark.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,7 +6,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.wit.placemark.databinding.ActivityPlacemarkBinding
 import org.wit.placemark.main.MainApp
 import org.wit.placemark.models.PlacemarkModel
-import timber.log.Timber //logging
 import timber.log.Timber.i
 
 class PlacemarkActivity : AppCompatActivity() {
