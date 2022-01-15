@@ -2,19 +2,24 @@ package org.wit.placemark.activities
 
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.Marker
 import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import org.wit.placemark.R
 import org.wit.placemark.databinding.ActivityPlacemarkBinding
 import org.wit.placemark.helpers.showImagePicker
 import org.wit.placemark.main.MainApp
+import org.wit.placemark.models.Location
 import org.wit.placemark.models.PlacemarkModel
+import timber.log.Timber
 import timber.log.Timber.i
 
 class PlacemarkActivity : AppCompatActivity() {
@@ -23,7 +28,8 @@ class PlacemarkActivity : AppCompatActivity() {
     var placemark = PlacemarkModel()
     lateinit var app: MainApp
     private lateinit var imageIntentLauncher : ActivityResultLauncher<Intent>
-    val IMAGE_REQUEST = 1
+    private lateinit var mapIntentLauncher : ActivityResultLauncher<Intent>
+    var location = Location(52.245696, -7.139102, 15f)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +81,14 @@ class PlacemarkActivity : AppCompatActivity() {
             showImagePicker(imageIntentLauncher)
         }
 
+        binding.placemarkLocation.setOnClickListener {
+            val launcherIntent = Intent(this, MapActivity::class.java)
+                .putExtra("location", location)
+            mapIntentLauncher.launch(launcherIntent)
+        }
+
         registerImagePickerCallback()
+        registerMapCallback()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -105,6 +118,23 @@ class PlacemarkActivity : AppCompatActivity() {
                                 .load(placemark.image)
                                 .into(binding.placemarkImage)
                             binding.chooseImage.setText(R.string.change_placemark_image)
+                        } // end of if
+                    }
+                    RESULT_CANCELED -> { } else -> { }
+                }
+            }
+    }
+
+    private fun registerMapCallback() {
+        mapIntentLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result ->
+                when (result.resultCode) {
+                    RESULT_OK -> {
+                        if (result.data != null) {
+                            i("Got Location ${result.data.toString()}")
+                            location = result.data!!.extras?.getParcelable("location")!!
+                            i("Location == $location")
                         } // end of if
                     }
                     RESULT_CANCELED -> { } else -> { }
